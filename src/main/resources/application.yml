@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: crm-backend
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/crm_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: your_mysql_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+    open-in-view: false
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+logging:
+  level:
+    com.crm: INFO
+    org.springframework.security: WARN
+
+# JWT Configuration
+app:
+  jwt:
+    secret: crm-super-secret-jwt-key-change-in-production-must-be-at-least-256-bits-long
+    expiration: 86400000   # 24 hours in ms
+    refresh-expiration: 604800000  # 7 days in ms
+
+  cors:
+    allowed-origins:
+      - http://localhost:3000
+      - http://localhost:5173
