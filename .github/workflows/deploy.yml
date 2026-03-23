@@ -1,0 +1,45 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build JAR
+        run: mvn clean package -DskipTests
+
+      - name: Copy JAR to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "target/*.jar"
+          target: "/opt/crm-backend"
+          strip_components: 1
+
+      - name: Restart backend service
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            systemctl restart crm-backend
+            sleep 5
+            systemctl status crm-backend --no-pager
+            echo "Backend deployed successfully!"
