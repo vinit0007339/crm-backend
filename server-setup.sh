@@ -3,12 +3,14 @@
 # Run as root: bash server-setup.sh
 
 set -e
+export DEBIAN_FRONTEND=noninteractive
+
 echo "========================================="
 echo "  CRM Server Setup Starting..."
 echo "========================================="
 
 # Update system
-apt-get update -y && apt-get upgrade -y
+apt-get update -y && DEBIAN_FRONTEND=noninteractive apt-get upgrade -y -o Dpkg::Options::="--force-confold"
 
 # Install essential tools
 apt-get install -y curl wget git unzip software-properties-common ufw
